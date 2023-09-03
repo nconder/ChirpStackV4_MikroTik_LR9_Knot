@@ -1,0 +1,78 @@
+# See https://www.chirpstack.io/gateway-bridge/install/config/ for a full
+# configuration example and documentation.
+
+[general]
+# debug=5, info=4, warning=3, error=2, fatal=1, panic=0
+log_level=5
+
+# Log to syslog.
+#
+# When set to true, log messages are being written to syslog.
+log_to_syslog=false
+
+# NetIDs filters.
+#
+# The configured NetIDs will be used to filter uplink data frames.
+# When left blank, no filtering will be performed on NetIDs.
+#
+# Example:
+# net_ids=[
+#   "000000",
+#   "000001",
+# ]
+net_ids=[
+]
+
+# JoinEUI filters.
+#
+# The configured JoinEUI ranges will be used to filter join-requests.
+# When left blank, no filtering will be performed on JoinEUIs.
+#
+# Example:
+# join_euis=[
+#   ["0000000000000000", "00000000000000ff"],
+#   ["000000000000ff00", "000000000000ffff"],
+# ]
+join_euis=[
+]
+
+[backend]
+  type="semtech_udp"
+  
+  [backend.semtech_udp]
+    udp_bind = "0.0.0.0:1700"
+    skip_crc_check = false
+    fake_rx_time=false
+    bind=":3001"
+
+# Region
+#
+# Please refer to the LoRaWAN Regional Parameters specification
+# for the complete list of common region names.
+region="US915"
+
+# Minimal frequency (Hz).
+frequency_min=902000000
+
+# Maximum frequency (Hz).
+frequency_max=928000000
+
+
+# Integration configuration.
+[integration]
+# Payload marshaler.
+#
+# This defines how the MQTT payloads are encoded. Valid options are:
+# * protobuf:  Protobuf encoding
+# * json:      JSON encoding (easier for debugging, but less compact than 'protobuf')
+marshaler="protobuf"
+
+[integration.mqtt]
+event_topic_template="us915_0/gateway/{{ .GatewayID }}/event/{{ .EventType }}"
+state_topic_template="us915_0/gateway/{{ .GatewayID }}/state/{{ .StateType }}"
+command_topic_template="us915_0/gateway/{{ .GatewayID }}/command/#"
+
+[integration.mqtt.auth.generic]
+servers=["tcp://mosquitto:1883"]
+username=""
+password=""
